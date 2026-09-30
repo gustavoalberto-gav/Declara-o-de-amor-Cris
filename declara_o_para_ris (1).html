@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Minha Amada Íris</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --color-burgundy: #4a0e17;
+            --color-wine: #6b1d2f;
+            --color-rose-gold: #d4af37;
+            --color-soft-beige: #fdf8f5;
+            --color-champagne: #f7e7ce;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #180307 0%, #300a12 50%, #1a0409 100%);
+            color: #3a0810;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .font-script {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        .font-serif-custom {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Glassmorphism Romantic Card */
+        .glass-card {
+            background: rgba(253, 248, 245, 0.94);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(212, 175, 55, 0.25);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+        }
+
+        /* Custom Golden Glow & Animations */
+        .gold-border {
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.35);
+        }
+
+        /* Slide Transition Effects */
+        .slide-content {
+            opacity: 0;
+            transform: translateY(15px) scale(0.98);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .slide-content.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .image-container img.main-img {
+            transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .slide-content.active .image-container img.main-img {
+            transform: scale(1.02);
+        }
+
+        /* Pulse heart animation */
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.15); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+
+        .animate-heart {
+            animation: heartPulse 2.5s infinite;
+        }
+
+        /* Subtle floating hint animation */
+        @keyframes floatHint {
+            0%, 100% { transform: translateY(0); opacity: 0.7; }
+            50% { transform: translateY(-5px); opacity: 1; }
+        }
+
+        .animate-float {
+            animation: floatHint 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex items-center justify-center p-3 sm:p-6 relative">
+
+    <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <main id="appContainer" class="relative z-10 w-full max-w-xl h-full max-h-[94vh] flex flex-col justify-between glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-7 overflow-hidden cursor-pointer">
+        
+        <!-- Header Bar -->
+        <header class="flex items-center justify-between pb-3 border-b border-amber-200/60 z-20">
+            <!-- Audio Music Toggle Button -->
+            <button id="musicBtn" onclick="toggleAudio(event)" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100/80 hover:bg-amber-200/80 text-wine border border-amber-300/60 transition text-xs sm:text-sm font-medium shadow-sm">
+                <span id="musicIcon" class="text-base sm:text-lg">🎵</span>
+                <span id="musicText">Música</span>
+            </button>
+
+            <!-- Slide Counter Display -->
+            <div class="text-center">
+                <span id="slideCounter" class="font-serif-custom text-wine font-bold text-sm sm:text-base tracking-wider">
+                    0 / 11
+                </span>
+            </div>
+
+            <!-- Mini Romantic Decoration -->
+            <div class="text-amber-600 text-lg sm:text-xl animate-heart">
+                ♥️
+            </div>
+        </header>
+
+        <!-- Progress Bar Indicator -->
+        <div class="w-full bg-amber-100/60 h-1.5 rounded-full overflow-hidden my-2 z-20">
+            <div id="progressBar" class="h-full bg-gradient-to-r from-wine via-rose-700 to-amber-500 w-0 transition-all duration-500 ease-out rounded-full"></div>
+        </div>
+
+        <div class="flex-1 flex flex-col justify-center items-center my-auto py-2 overflow-y-auto z-20">
+            <div id="slideCard" class="slide-content active w-full flex flex-col items-center text-center">
+                
+                <!-- Slide Title (Specifically for Cover Slide 0) -->
+                <h1 id="slideTitle" class="font-script text-3xl sm:text-5xl text-wine mb-2 sm:mb-3 drop-shadow-sm hidden">
+                    Para Minha Amada Íris
+                </h1>
+
+                <!-- Ambient Blurred Photo Frame (Guarantees NO cropping on faces or head) -->
+                <div class="image-container relative my-2 sm:my-3 rounded-2xl overflow-hidden gold-border shadow-2xl bg-amber-950/20 flex items-center justify-center max-h-[40vh] sm:max-h-[44vh] w-full max-w-[340px] sm:max-w-[380px] aspect-[4/5]">
+                    
+                    <!-- Background Blurred Clone for Ambient Glow -->
+                    <img id="slideImgBg" src="CRIS.jpg" alt="" class="absolute inset-0 w-full h-full object-cover filter blur-md opacity-45 scale-110 pointer-events-none transition-all duration-500" />
+
+                    <!-- Main Image (fitted with object-contain to display 100% of face and photo without cropping) -->
+                    <img id="slideImg" src="CRIS.jpg" alt="Foto da Íris" class="main-img relative z-10 max-w-full max-h-full object-contain rounded-xl drop-shadow-md" onerror="handleImgError(this)" />
+                    
+                    <!-- SVG Fallback container (populated if photo file is missing) -->
+                    <div id="fallbackFrame" class="hidden absolute inset-0 z-20 bg-gradient-to-br from-rose-100 via-amber-50 to-rose-200 flex flex-col items-center justify-center p-6 text-wine">
+                        <svg class="w-16 h-16 mb-3 text-rose-700 opacity-80" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <span id="fallbackText" class="font-serif-custom text-lg font-semibold text-center italic">Para Você</span>
+                        <span class="text-xs text-rose-800/70 mt-1">com todo meu amor</span>
+                    </div>
+                </div>
+
+                <!-- Verse / Poetry Container -->
+                <div id="verseBox" class="mt-2 sm:mt-3 px-2 sm:px-4 w-full">
+                    <p id="slideVerse" class="font-serif-custom text-wine text-base sm:text-lg sm:leading-relaxed font-medium whitespace-pre-line italic">
+                        <!-- Verse inserted via JS -->
+                    </p>
+                </div>
+
+                <!-- Subtext / Tap Hint -->
+                <p id="slideSubtext" class="mt-3 sm:mt-4 text-xs sm:text-sm text-amber-800/80 font-medium tracking-wide animate-float">
+                    Toque na tela para iniciar nossa história
+                </p>
+            </div>
+        </div>
+
+        <footer class="pt-3 border-t border-amber-200/60 flex items-center justify-between z-30">
+            <!-- Previous Button -->
+            <button id="prevBtn" onclick="prevSlide(event)" class="px-4 py-2 rounded-xl bg-amber-100/90 hover:bg-amber-200 text-wine font-semibold text-xs sm:text-sm transition flex items-center gap-1 shadow-sm disabled:opacity-30 disabled:cursor-not-allowed">
+                <span>←</span>
+                <span>Anterior</span>
+            </button>
+
+            <!-- Navigation Dots -->
+            <div id="dotsContainer" class="hidden sm:flex items-center gap-1.5 px-2">
+                <!-- Dots generated by JS -->
+            </div>
+
+            <!-- Next Button -->
+            <button id="nextBtn" onclick="nextSlide(event)" class="px-4 py-2 rounded-xl bg-wine hover:bg-rose-900 text-amber-100 font-semibold text-xs sm:text-sm transition flex items-center gap-1 shadow-md border border-amber-400/40">
+                <span>Próximo</span>
+                <span>→</span>
+            </button>
+        </footer>
+    </main>
+
+    <script>
+        // Array com todos os slides, versos e fallbacks inteligentes de imagem
+        const slides = [
+            {
+                id: 0,
+                title: "Para Minha Amada Íris",
+                image: "CRIS.jpg",
+                fallbackImages: ["cris.jpg", "CRIS.jpeg", "cris.png", "CRIS.PNG"],
+                verse: "",
+                subtext: "Toque na tela para iniciar nossa história",
+                flowerTag: "Cris & Íris"
+            },
+            {
+                id: 1,
+                title: "",
+                image: "01.jpeg",
+                fallbackImages: ["1.jpeg", "01.jpg", "1.jpg"],
+                verse: "Quando penso em você, meu sorriso sempre abre,\nAssim como o sol, após uma tempestade;\nTu sempre traz um solo fértil para meu coração,\nOnde plantaste, tão pura e doce paixão.",
+                subtext: "",
+                flowerTag: "Sol & Paixão"
+            },
+            {
+                id: 2,
+                title: "",
+                image: "2.jpeg",
+                // Fallback automático inteligente para tentar 01.jpeg (Orquídeas), 02.jpeg, 2.jpg etc.
+                fallbackImages: ["01.jpeg", "02.jpeg", "2.jpg", "02.jpg", "orquidea.jpeg", "orquidea.jpg"],
+                verse: "As flores que encontro, me remetem suas características,\nSois delicada e sofisticada, como as Orquídeas;",
+                subtext: "",
+                flowerTag: "Orquídea"
+            },
+            {
+                id: 3,
+                title: "",
+                image: "3.jpeg",
+                fallbackImages: ["03.jpeg", "3.jpg", "03.jpg"],
+                verse: "Tua beleza inspira as primaveras, és tu como Tulipas;",
+                subtext: "",
+                flowerTag: "Tulipa"
+            },
+            {
+                id: 4,
+                title: "",
+                image: "4.jpeg",
+                fallbackImages: ["04.jpeg", "4.jpg", "04.jpg"],
+                verse: "Com sua simplicidade e leveza, doce Margarida.",
+                subtext: "",
+                flowerTag: "Margarida"
+            },
+            {
+                id: 5,
+                title: "",
+                image: "5.jpeg",
+                fallbackImages: ["05.jpeg", "5.jpg", "05.jpg"],
+                verse: "Seus cabelos são curvos e sedosos, assim como Lotus;",
+                subtext: "",
+                flowerTag: "Lótus"
+            },
+            {
+                id: 6,
+                title: "",
+                image: "06.jpeg",
+                fallbackImages: ["6.jpeg", "06.jpg", "6.jpg"],
+                verse: "Lembrando os jasmins, perfumados e intensos, são seus olhos;",
+                subtext: "",
+                flowerTag: "Jasmim"
+            },
+            {
+                id: 7,
+                title: "",
+                image: "7.jpeg",
+                fallbackImages: ["07.jpeg", "7.jpg", "07.jpg"],
+                verse: "De Íris para Cris, somente uma letra difere;",
+                subtext: "",
+                flowerTag: "Íris para Cris"
+            },
+            {
+                id: 8,
+                title: "",
+                image: "8.jpeg",
+                fallbackImages: ["08.jpeg", "8.jpg", "08.jpg"],
+                verse: "Ternura e calor, compõem sua pele;\nO cheiro que dela emana;\nÉ agradável como Lavanda.",
+                subtext: "",
+                flowerTag: "Lavanda"
+            },
+            {
+                id: 9,
+                title: "",
+                image: "9.jpeg",
+                fallbackImages: ["09.jpeg", "9.jpg", "09.jpg"],
+                verse: "Tua voz, semelhante à Peônia, me traz esperança;",
+                subtext: "",
+                flowerTag: "Peônia"
+            },
+            {
+                id: 10,
+                title: "",
+                image: "10.jpeg",
+                fallbackImages: ["10.jpg"],
+                verse: "Te ver me enche de amor, e meu peito dispara;\nÉs Tu infinita e completa, como uma Dália.",
+                subtext: "",
+                flowerTag: "Dália"
+            },
+            {
+                id: 11,
+                title: "",
+                image: "11.jpeg",
+                fallbackImages: ["11.jpg", "casal.jpeg", "casal.jpg"],
+                verse: "Chego ao fim desta declaração, com orgulho;\nSei que não sou o melhor poeta, mas juro;\nQue cada palavra trouxe meus sentimentos mais puros,\nPois você é a flor mais linda do meu mundo.",
+                subtext: "♥ Com todo o meu amor ♥",
+                flowerTag: "A Flor Mais Linda"
+            }
+        ];
+
+        let currentSlideIndex = 0;
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let audioCtx = null;
+        let isPlayingAudio = false;
+        let audioInterval = null;
+        let fallbackAttempts = {};
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playNote(freq, duration = 2.5, type = 'sine') {
+            if (!audioCtx || !isPlayingAudio) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 0.2);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Audio error", e);
+            }
+        }
+
+        function startMelody() {
+            const notes = [
+                293.66, 369.99, 440.00, 554.37, 659.25, // D4, F#4, A4, C#5, E5
+                440.00, 369.99, 587.33, 440.00, 293.66
+            ];
+            let noteIdx = 0;
+
+            audioInterval = setInterval(() => {
+                if (!isPlayingAudio) return;
+                playNote(notes[noteIdx], 3.0, 'sine');
+                if (noteIdx % 3 === 0) {
+                    playNote(notes[noteIdx] / 2, 4.0, 'triangle');
+                }
+                noteIdx = (noteIdx + 1) % notes.length;
+            }, 1200);
+        }
+
+        function toggleAudio(e) {
+            if (e) e.stopPropagation();
+            initAudio();
+
+            isPlayingAudio = !isPlayingAudio;
+            const btnText = document.getElementById('musicText');
+            const btnIcon = document.getElementById('musicIcon');
+
+            if (isPlayingAudio) {
+                btnText.textContent = "Tocando";
+                btnIcon.textContent = "🎶";
+                startMelody();
+            } else {
+                btnText.textContent = "Música";
+                btnIcon.textContent = "🎵";
+                if (audioInterval) clearInterval(audioInterval);
+            }
+        }
+
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = -20 - Math.random() * 50;
+                this.size = 8 + Math.random() * 12;
+                this.speedY = 0.6 + Math.random() * 1.2;
+                this.speedX = Math.sin(Math.random() * Math.PI) * 0.8;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotSpeed = (Math.random() - 0.5) * 0.03;
+                this.type = Math.random() > 0.4 ? 'petal' : 'heart';
+                this.opacity = 0.4 + Math.random() * 0.5;
+                this.color = Math.random() > 0.5 ? '#f43f5e' : '#fb7185';
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += Math.sin(this.y * 0.01) + this.speedX;
+                this.rotation += this.rotSpeed;
+
+                if (this.y > canvas.height + 30) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.globalAlpha = this.opacity;
+
+                if (this.type === 'petal') {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.bezierCurveTo(-this.size, -this.size / 2, -this.size, this.size, 0, this.size * 1.3);
+                    ctx.bezierCurveTo(this.size, this.size, this.size, -this.size / 2, 0, 0);
+                    ctx.fill();
+                } else {
+                    ctx.fillStyle = '#e11d48';
+                    ctx.beginPath();
+                    const topCurveHeight = this.size * 0.3;
+                    ctx.moveTo(0, topCurveHeight);
+                    ctx.bezierCurveTo(0, 0, -this.size / 2, 0, -this.size / 2, topCurveHeight);
+                    ctx.bezierCurveTo(-this.size / 2, (this.size + topCurveHeight) / 2, 0, this.size, 0, this.size * 1.2);
+                    ctx.bezierCurveTo(0, this.size, this.size / 2, (this.size + topCurveHeight) / 2, this.size / 2, topCurveHeight);
+                    ctx.bezierCurveTo(this.size / 2, 0, 0, 0, 0, topCurveHeight);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const particleCount = Math.min(Math.floor(window.innerWidth / 20), 45);
+            for (let i = 0; i < particleCount; i++) {
+                const p = new Particle();
+                p.y = Math.random() * canvas.height;
+                particles.push(p);
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        function renderSlide(index) {
+            const slide = slides[index];
+            const slideCard = document.getElementById('slideCard');
+            const slideTitle = document.getElementById('slideTitle');
+            const slideImg = document.getElementById('slideImg');
+            const slideImgBg = document.getElementById('slideImgBg');
+            const fallbackFrame = document.getElementById('fallbackFrame');
+            const slideVerse = document.getElementById('slideVerse');
+            const slideSubtext = document.getElementById('slideSubtext');
+            const slideCounter = document.getElementById('slideCounter');
+            const progressBar = document.getElementById('progressBar');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            // Fade Out
+            slideCard.classList.remove('active');
+
+            setTimeout(() => {
+                // Update Counter & Progress
+                slideCounter.textContent = `${slide.id} / ${slides.length - 1}`;
+                const progressPercent = (slide.id / (slides.length - 1)) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+
+                // Title
+                if (slide.id === 0) {
+                    slideTitle.textContent = slide.title;
+                    slideTitle.classList.remove('hidden');
+                } else {
+                    slideTitle.classList.add('hidden');
+                }
+
+                // Reset Image Views & Load Image
+                fallbackFrame.classList.add('hidden');
+                slideImg.classList.remove('hidden');
+                slideImgBg.classList.remove('hidden');
+
+                slideImg.src = slide.image;
+                slideImgBg.src = slide.image;
+                slideImg.alt = slide.flowerTag || "Foto Romântica";
+
+                // Verse & Subtext
+                slideVerse.textContent = slide.verse;
+                slideSubtext.textContent = slide.subtext || "Toque para continuar ➔";
+
+                // Buttons
+                prevBtn.disabled = (slide.id === 0);
+                if (slide.id === slides.length - 1) {
+                    nextBtn.innerHTML = `<span>Início</span> <span>↺</span>`;
+                } else {
+                    nextBtn.innerHTML = `<span>Próximo</span> <span>→</span>`;
+                }
+
+                updateDots(slide.id);
+
+                // Fade In
+                slideCard.classList.add('active');
+            }, 250);
+        }
+
+        // Sistema Inteligente de Tentativa e Fallback para Imagens (Ex: 2.jpeg -> 01.jpeg -> 02.jpeg)
+        function handleImgError(imgElement) {
+            const currentSlide = slides[currentSlideIndex];
+            if (!fallbackAttempts[currentSlide.id]) {
+                fallbackAttempts[currentSlide.id] = 0;
+            }
+
+            const fallbacks = currentSlide.fallbackImages || [];
+            const attemptIndex = fallbackAttempts[currentSlide.id];
+
+            if (attemptIndex < fallbacks.length) {
+                const nextSrc = fallbacks[attemptIndex];
+                fallbackAttempts[currentSlide.id]++;
+                
+                // Tenta próximo nome de arquivo na lista
+                imgElement.src = nextSrc;
+                document.getElementById('slideImgBg').src = nextSrc;
+            } else {
+                // Caso nenhuma imagem local seja encontrada, exibe moldura ilustrativa
+                imgElement.classList.add('hidden');
+                document.getElementById('slideImgBg').classList.add('hidden');
+                const fallbackFrame = document.getElementById('fallbackFrame');
+                const fallbackText = document.getElementById('fallbackText');
+                fallbackText.textContent = currentSlide.flowerTag || "Íris & Cris";
+                fallbackFrame.classList.remove('hidden');
+            }
+        }
+
+        function nextSlide(e) {
+            if (e) e.stopPropagation();
+            if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+            } else {
+                currentSlideIndex = 0;
+            }
+            renderSlide(currentSlideIndex);
+        }
+
+        function prevSlide(e) {
+            if (e) e.stopPropagation();
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                renderSlide(currentSlideIndex);
+            }
+        }
+
+        function goToSlide(index, e) {
+            if (e) e.stopPropagation();
+            currentSlideIndex = index;
+            renderSlide(currentSlideIndex);
+        }
+
+        function createDots() {
+            const dotsContainer = document.getElementById('dotsContainer');
+            dotsContainer.innerHTML = '';
+            slides.forEach((_, idx) => {
+                const dot = document.createElement('button');
+                dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${idx === currentSlideIndex ? 'bg-wine w-5' : 'bg-amber-300/80 hover:bg-amber-400'}`;
+                dot.onclick = (e) => goToSlide(idx, e);
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function updateDots(activeIdx) {
+            const dots = document.getElementById('dotsContainer').children;
+            Array.from(dots).forEach((dot, idx) => {
+                if (idx === activeIdx) {
+                    dot.className = 'w-5 h-2 rounded-full bg-wine transition-all duration-300';
+                } else {
+                    dot.className = 'w-2 h-2 rounded-full bg-amber-300/80 hover:bg-amber-400 transition-all duration-300';
+                }
+            });
+        }
+
+        // Tap/Click Anywhere
+        document.getElementById('appContainer').addEventListener('click', (e) => {
+            if (e.target.closest('button') || e.target.closest('#dotsContainer')) {
+                return;
+            }
+            initAudio();
+            nextSlide();
+        });
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Touch Swipe
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) {
+                nextSlide();
+            } else if (touchEndX > touchStartX + 40) {
+                prevSlide();
+            }
+        }, { passive: true });
+
+        // Window Load
+        window.onload = function() {
+            initParticles();
+            animateParticles();
+            createDots();
+            renderSlide(0);
+        };
+    </script>
+</body>
+</html>
